@@ -30,6 +30,8 @@ export const useMemberStore = defineStore(
     // 网页端配置
     // persist: true,
     // 小程序端配置
+    // uni.getStorageSync(key) 获取本地存储
+    // uni.setStorageSync(key, value) 设置本地存储
     persist: {
       storage: {
         getItem: (key: string) => uni.getStorageSync(key),

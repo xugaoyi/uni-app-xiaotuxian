@@ -1,0 +1,8 @@
+项目模板代码
+
+git clone http://git.itcast.cn/heimaqianduan/erabbit-uni-app-vue3-ts.git heima-shop
+
+
+项目成品代码
+
+git clone https://gitee.com/Megasu/uniapp-shop-vue3-ts.git
