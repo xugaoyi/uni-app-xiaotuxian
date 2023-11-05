@@ -35,12 +35,25 @@ onLoad(() => {
   getHomeHotData()
 })
 
-// 获取猜你喜欢实例
+// 获取“猜你喜欢”组件实例
 const guessRef = ref<XtxGuessInstance>()
 
 // 滚动触底
 const onScrolltolower = () => {
   guessRef.value?.getMore()
+}
+
+// 当前下拉刷新状态
+const isTriggered = ref(false)
+
+// 自定义下拉刷新被触发
+const onRefresherrefresh = async () => {
+  // 开始动画
+  isTriggered.value = true
+  // 加载数据
+  await Promise.all([getHomeBannerData(), getHomeCategoryData(), getHomeHotData()])
+  // 关闭动画
+  isTriggered.value = false
 }
 </script>
 
@@ -48,7 +61,14 @@ const onScrolltolower = () => {
   <!-- 自定义导航栏 -->
   <CustomNavbar />
   <!-- 注意：scroll-view需要设置 flex:1，让其高度自动撑开 -->
-  <scroll-view @scrolltolower="onScrolltolower" class="scroll-view" scroll-y>
+  <scroll-view
+    refresher-enabled
+    :refresher-triggered="isTriggered"
+    @refresherrefresh="onRefresherrefresh"
+    @scrolltolower="onScrolltolower"
+    class="scroll-view"
+    scroll-y
+  >
     <!-- 轮播图 -->
     <XtxSwiper :list="bannerList" />
     <!-- 分类面板 -->
