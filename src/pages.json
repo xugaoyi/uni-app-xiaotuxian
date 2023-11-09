@@ -96,5 +96,28 @@
 				"selectedIconPath": "static/tabs/user_selected.png"
 			}
 		]
-	}
+	},
+  // 分包加载规则（将子包从主包分离，加快小程序打开速度）
+  // * 经验： 分包一般是按照项目的业务模块划分，如会员模块分包，订单模块分包等
+	"subPackages": [
+		{
+			"root": "pagesMember",
+			"pages": [
+				{
+					"path": "settings/settings",
+					"style": {
+						"navigationBarTitleText": "设置"
+					}
+				}
+			]
+		}
+	],
+  // 分包预下载规则 (打开某个页面时预下载分包)
+  "preloadRule": {
+    // 打开 key 指定的页面时预下载分包
+    "pages/my/my": {
+      "network": "all", // 在什么网络下预下载分包
+      "packages": ["pagesMember"] // 指定预下载的分包
+    }
+  }
 }
