@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { BannerItem, CategoryItem, HotItem } from '@/types/home'
-import type { XtxGuessInstance } from '@/types/component'
 import { getHomeBannerAPI, getHomeCategoryAPI, getHomeHotAPI } from '@/services/home'
 import CustomNavbar from './components/CustomNavbar.vue'
 import { onLoad } from '@dcloudio/uni-app'
@@ -8,6 +7,7 @@ import { ref } from 'vue'
 import CategoryPanel from './components/CategoryPanel.vue'
 import HotPanel from './components/HotPanel.vue'
 import PageSkeleton from './components/PageSkeleton.vue'
+import { useGuessList } from '@/composables'
 
 // 获取轮播图数据
 const bannerList = ref<BannerItem[]>([])
@@ -40,13 +40,8 @@ onLoad(async () => {
   isLoading.value = false
 })
 
-// 获取“猜你喜欢”组件实例
-const guessRef = ref<XtxGuessInstance>()
-
-// 滚动触底
-const onScrolltolower = () => {
-  guessRef.value?.getMore()
-}
+// 从组合式函数调取需要的数据和方法
+const { guessRef, onScrolltolower } = useGuessList()
 
 // 当前下拉刷新状态
 const isTriggered = ref(false)
