@@ -2,7 +2,7 @@
 import { getMemberProfileAPI, putMemberProfileAPI } from '@/services/profile'
 import { onLoad } from '@dcloudio/uni-app'
 import { ref } from 'vue'
-import type { ProfileDetail, Gender } from '@/types/member'
+import type { ProfileDetail, Gender, ProfileParams } from '@/types/member'
 import { useMemberStore } from '@/stores'
 
 // 获取屏幕边界到安全区域距离
@@ -63,14 +63,35 @@ const onBirthadyChange: UniHelper.DatePickerOnChange = (ev) => {
   profile.value.birthday = ev.detail.value
 }
 
+// 修改城市
+let fullLocationCode: [string, string, string] = ['', '', '']
+const onFullLocationChange: UniHelper.RegionPickerOnChange = (ev) => {
+  // 修改前端界面数据
+  profile.value.fullLocation = ev.detail.value.join(' ')
+  // 提交后端更新用的
+  fullLocationCode = ev.detail.code! // !非空断言
+}
+
 // 点击保存提交表单
 const onSubmit = async () => {
-  const { nickname, gender, birthday } = profile.value
-  const res = await putMemberProfileAPI({
+  const { nickname, gender, birthday, profession } = profile.value
+  let params: ProfileParams = {
     nickname,
     gender,
     birthday,
-  })
+    profession,
+  }
+
+  const [provinceCode, cityCode, countyCode] = fullLocationCode
+  if (provinceCode) {
+    params = {
+      ...params,
+      provinceCode,
+      cityCode,
+      countyCode,
+    }
+  }
+  const res = await putMemberProfileAPI(params)
   // 更新Store昵称
   memberStore.profile!.nickname = res.result.nickname
   uni.showToast({ icon: 'success', title: '保存成功' })
@@ -136,14 +157,19 @@ const onSubmit = async () => {
         </view>
         <view class="form-item">
           <text class="label">城市</text>
-          <picker class="picker" mode="region" :value="profile?.fullLocation?.split(' ')">
+          <picker
+            class="picker"
+            mode="region"
+            :value="profile?.fullLocation?.split(' ')"
+            @change="onFullLocationChange"
+          >
             <view v-if="profile?.fullLocation">{{ profile?.fullLocation }}</view>
             <view class="placeholder" v-else>请选择城市</view>
           </picker>
         </view>
         <view class="form-item">
           <text class="label">职业</text>
-          <input class="input" type="text" placeholder="请填写职业" :value="profile?.profession" />
+          <input class="input" type="text" placeholder="请填写职业" v-model="profile!.profession" />
         </view>
       </view>
       <!-- 提交按钮 -->
