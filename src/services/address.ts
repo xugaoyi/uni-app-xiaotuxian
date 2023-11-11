@@ -36,3 +36,17 @@ export const getMemberAddressByIdAPI = (id: string) => {
     url: `/member/address/${id}`,
   })
 }
+
+/**
+ * 修改收货地址
+ * @param id 收货地址id
+ * @param data 表单数据（请求体参数）
+ * @returns
+ */
+export const putMemberAddressByIdAPI = (id: string, data: AddressParams) => {
+  return http<AddressItem>({
+    method: 'PUT',
+    url: `/member/address/${id}`,
+    data,
+  })
+}
