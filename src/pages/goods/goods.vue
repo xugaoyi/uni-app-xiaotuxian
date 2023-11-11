@@ -5,6 +5,7 @@ import type { GoodsResult } from '@/types/goods'
 import { ref } from 'vue'
 import AddressPanel from './components/AddressPanel.vue'
 import ServicePanel from './components/ServicePanel.vue'
+import type { SkuPopupLocaldata } from '@/components/vk-data-goods-sku-popup/vk-data-goods-sku-popup'
 
 // 获取屏幕边界到安全区域距离
 const { safeAreaInsets } = uni.getSystemInfoSync()
@@ -17,8 +18,28 @@ const query = defineProps<{
 // 获取商品详情数据
 const goods = ref<GoodsResult>()
 const getGoodsByIdData = async () => {
-  const res = await getGoodsByIdAPI(query.id)
-  goods.value = res.result
+  const { result } = await getGoodsByIdAPI(query.id)
+  goods.value = result
+  // SKU组件所需格式
+  localdata.value = {
+    _id: result.id, // 商品id
+    name: result.name, // 商品名称
+    goods_thumb: result.mainPictures[0], // 商品主图
+    spec_list: result.specs.map((v) => ({
+      name: v.name,
+      list: v.values,
+    })), // 商品规格列表（如：颜色、尺码...）
+    sku_list: result.skus.map((v) => ({
+      _id: v.id,
+      goods_id: result.id,
+      goods_name: result.name,
+      image: v.picture,
+      price: v.price * 100, // 注意：需要乘以100
+      stock: v.inventory,
+      sku_name_arr: v.specs.map((vv) => vv.valueName),
+    })), // 商品SKU列表 (选中每项规格后对应的具体数据)
+  }
+  console.log('[ localdata.value ] >', localdata.value)
 }
 
 // 页面加载
@@ -54,9 +75,16 @@ const openPopup = (name: typeof popupName.value) => {
   popupName.value = name
   popup.value?.open()
 }
+
+// 是否显示SKU组件
+const isShowSku = ref(false)
+// 商品信息
+const localdata = ref({} as SkuPopupLocaldata)
 </script>
 
 <template>
+  <!-- SKU弹窗组件 -->
+  <vk-data-goods-sku-popup v-model="isShowSku" :localdata="localdata" />
   <scroll-view scroll-y class="viewport">
     <!-- 基本信息 -->
     <view class="goods">
@@ -86,7 +114,7 @@ const openPopup = (name: typeof popupName.value) => {
 
       <!-- 操作面板 -->
       <view class="action">
-        <view class="item arrow">
+        <view class="item arrow" @tap="isShowSku = true">
           <text class="label">选择</text>
           <text class="text ellipsis"> 请选择商品规格 </text>
         </view>
