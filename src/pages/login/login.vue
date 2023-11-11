@@ -51,7 +51,8 @@ const loginSuccess = (profile: LoginResult) => {
   })
   setTimeout(() => {
     // 跳转页面 (跳转tabBar页必须用 uni.switchTab 方法，非tabBar页用 uni.navigateTo)
-    uni.switchTab({ url: '/pages/my/my' })
+    // uni.switchTab({ url: '/pages/my/my' })
+    uni.navigateBack() // 用返回上一页更合适
   }, 500)
 }
 </script>
