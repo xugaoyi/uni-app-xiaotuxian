@@ -21,7 +21,7 @@ const onDeleteAddress = (id: string) => {
   // 二次确认
   uni.showModal({
     content: '删除地址？',
-    success: async (res) => {
+    async success(res) {
       if (res.confirm) {
         // 删除收货地址
         await deleteMemberAddressByIdAPI(id)
