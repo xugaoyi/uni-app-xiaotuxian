@@ -2,10 +2,13 @@
 import { getGoodsByIdAPI } from '@/services/goods'
 import { onLoad } from '@dcloudio/uni-app'
 import type { GoodsResult } from '@/types/goods'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import AddressPanel from './components/AddressPanel.vue'
 import ServicePanel from './components/ServicePanel.vue'
-import type { SkuPopupLocaldata } from '@/components/vk-data-goods-sku-popup/vk-data-goods-sku-popup'
+import type {
+  SkuPopupInstance,
+  SkuPopupLocaldata,
+} from '@/components/vk-data-goods-sku-popup/vk-data-goods-sku-popup'
 
 // 获取屏幕边界到安全区域距离
 const { safeAreaInsets } = uni.getSystemInfoSync()
@@ -81,30 +84,42 @@ const isShowSku = ref(false)
 // SKU组件-商品信息
 const localdata = ref({} as SkuPopupLocaldata)
 // SKU组件-按钮显示模式
-enum SkuMode {
+enum BtnShowModeEnum {
   Both = 1, // 两个按钮都显示
   Cart = 2, // 购物车按钮显示
   Buy = 3, // 立即购买按钮显示
 }
-const mode = ref<SkuMode>(SkuMode.Both)
+const btnShowMode = ref<BtnShowModeEnum>(BtnShowModeEnum.Both)
 
 // 打开SKU弹窗并修改按钮显示模式
-const openSkuPopup = (val: SkuMode) => {
+const openSkuPopup = (val: BtnShowModeEnum) => {
   // 显示SKU弹窗
   isShowSku.value = true
   // 修改按钮显示模式
-  mode.value = val
+  btnShowMode.value = val
 }
+// SKU组件实例
+const skuPopupRef = ref<SkuPopupInstance>()
+// 计算各规格被选中的值
+const selectArrText = computed(
+  () => skuPopupRef.value?.selectArr?.join(' ').trim() || '请选择商品规格',
+)
 </script>
 
 <template>
   <!-- SKU弹窗组件 -->
   <vk-data-goods-sku-popup
+    ref="skuPopupRef"
     v-model="isShowSku"
     :localdata="localdata"
-    :mode="mode"
+    :mode="btnShowMode"
     add-cart-background-color="#ffa868"
     buy-now-background-color="#27ba9b"
+    :actived-style="{
+      color: '#27ba9b',
+      borderColor: '#27ba9b',
+      backgroundColor: '#e9f8f5',
+    }"
   />
   <scroll-view scroll-y class="viewport">
     <!-- 基本信息 -->
@@ -135,9 +150,9 @@ const openSkuPopup = (val: SkuMode) => {
 
       <!-- 操作面板 -->
       <view class="action">
-        <view class="item arrow" @tap="openSkuPopup(SkuMode.Both)">
+        <view class="item arrow" @tap="openSkuPopup(BtnShowModeEnum.Both)">
           <text class="label">选择</text>
-          <text class="text ellipsis"> 请选择商品规格 </text>
+          <text class="text ellipsis"> {{ selectArrText }} </text>
         </view>
         <view @tap="openPopup('address')" class="item arrow">
           <text class="label">送至</text>
@@ -209,8 +224,8 @@ const openSkuPopup = (val: SkuMode) => {
       </navigator>
     </view>
     <view class="buttons">
-      <view class="addcart" @tap="openSkuPopup(SkuMode.Cart)"> 加入购物车 </view>
-      <view class="buynow" @tap="openSkuPopup(SkuMode.Buy)"> 立即购买 </view>
+      <view class="addcart" @tap="openSkuPopup(BtnShowModeEnum.Cart)"> 加入购物车 </view>
+      <view class="buynow" @tap="openSkuPopup(BtnShowModeEnum.Buy)"> 立即购买 </view>
     </view>
   </view>
 
