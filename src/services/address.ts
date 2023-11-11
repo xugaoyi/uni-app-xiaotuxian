@@ -39,7 +39,7 @@ export const getMemberAddressByIdAPI = (id: string) => {
 
 /**
  * 修改收货地址
- * @param id 收货地址id
+ * @param id 收货地址id (路径参数)
  * @param data 表单数据（请求体参数）
  * @returns
  */
@@ -48,5 +48,17 @@ export const putMemberAddressByIdAPI = (id: string, data: AddressParams) => {
     method: 'PUT',
     url: `/member/address/${id}`,
     data,
+  })
+}
+
+/**
+ * 删除收货地址
+ * @param id 收货地址id  (路径参数)
+ * @returns
+ */
+export const deleteMemberAddressByIdAPI = (id: string) => {
+  return http({
+    method: 'DELETE',
+    url: `/member/address/${id}`,
   })
 }
