@@ -6,12 +6,23 @@ import { ref, computed, defineProps } from 'vue'
 import type { CartItem } from '@/types/cart'
 import type { InputNumberBoxEvent } from '@/components/vk-data-input-number-box/vk-data-input-number-box'
 import { putMemberCartBySkuIdAPI, putMemberCartSelectedAPI } from '@/services/cart'
+import { useGuessList } from '@/composables/index'
 
 // 定义props
-defineProps<{
+const props = defineProps<{
   // 是否开启底部安全区适配
   safeAreaInsetBottom?: boolean
 }>()
+
+// 获取屏幕边界到安全区域距离
+const { safeAreaInsets } = uni.getSystemInfoSync()
+
+// 底部安全区样式
+const safeAreaStyle = props.safeAreaInsetBottom
+  ? {
+      paddingBottom: safeAreaInsets?.bottom + 'px',
+    }
+  : {}
 
 // 获取会员信息
 const memberStore = useMemberStore()
@@ -107,10 +118,13 @@ const gotoPayment = () => {
     icon: 'none',
   })
 }
+
+// 猜你喜欢-从组合式函数调取需要的数据和方法
+const { guessRef, onScrolltolower } = useGuessList()
 </script>
 
 <template>
-  <scroll-view scroll-y class="scroll-view">
+  <scroll-view scroll-y class="scroll-view" @scrolltolower="onScrolltolower">
     <!-- 已登录: 显示购物车 -->
     <template v-if="memberStore.profile">
       <!-- 购物车列表 -->
@@ -173,7 +187,7 @@ const gotoPayment = () => {
         </navigator>
       </view>
       <!-- 吸底工具栏 -->
-      <view class="toolbar" :class="{ 'safe-area-inset-bottom': safeAreaInsetBottom }">
+      <view class="toolbar" :style="safeAreaStyle">
         <text class="all" :class="{ checked: isSelectedAll }" @tap="onChangeSelectedAll">全选</text>
         <text class="text">合计:</text>
         <text class="amount">{{ selectedCartListMoney }}</text>
@@ -198,7 +212,7 @@ const gotoPayment = () => {
     <!-- 猜你喜欢 -->
     <XtxGuess ref="guessRef"></XtxGuess>
     <!-- 底部占位空盒子 -->
-    <view class="toolbar-height"></view>
+    <view class="toolbar-height" :style="safeAreaStyle"></view>
   </scroll-view>
 </template>
 
@@ -424,12 +438,6 @@ const gotoPayment = () => {
   background-color: #fff;
   box-sizing: content-box;
 
-  &.safe-area-inset-bottom {
-    padding-bottom: 0;
-    padding-bottom: constant(safe-area-inset-bottom);
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-
   .all {
     margin-left: 25rpx;
     font-size: 14px;
@@ -499,5 +507,6 @@ const gotoPayment = () => {
 // 底部占位空盒子
 .toolbar-height {
   height: 100rpx;
+  box-sizing: content-box;
 }
 </style>
