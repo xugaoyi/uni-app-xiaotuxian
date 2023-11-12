@@ -54,3 +54,16 @@ export const putMemberCartBySkuIdAPI = (
     data,
   })
 }
+
+/**
+ * 购物车全选/取消全选
+ * @param data selected 选中状态
+ * @returns
+ */
+export const putMemberCartSelectedAPI = (data: { selected: boolean }) => {
+  return http({
+    method: 'PUT',
+    url: '/member/cart/selected',
+    data,
+  })
+}
