@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getMemberOrderPreAPI } from '@/services/order'
+import { getMemberOrderPreAPI, getMemberOrderPreNowAPI } from '@/services/order'
 import { useAddressStore } from '@/stores/modules/address'
 import type { OrderPreResult } from '@/types/order'
 import { onLoad } from '@dcloudio/uni-app'
@@ -24,11 +24,27 @@ const onChangeDelivery: UniHelper.SelectorPickerOnChange = (ev) => {
   activeIndex.value = ev.detail.value
 }
 
+// 页面参数 (从商品详情页”立即购买“过来，带有参数)
+const query = defineProps<{
+  skuId?: string
+  count?: string
+}>()
+
 // 获取订单信息
 const orderPre = ref<OrderPreResult>()
 const getMemberOrderPreData = async () => {
-  const { result } = await getMemberOrderPreAPI()
-  orderPre.value = result
+  if (query.skuId && query.count) {
+    // 从商品详情页”立即购买“过来的
+    const { result } = await getMemberOrderPreNowAPI({
+      skuId: query.skuId,
+      count: query.count,
+    })
+    orderPre.value = result
+  } else {
+    // 从购物车页过来的
+    const { result } = await getMemberOrderPreAPI()
+    orderPre.value = result
+  }
 }
 
 onLoad(() => {
