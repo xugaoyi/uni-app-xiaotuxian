@@ -2,10 +2,16 @@
 import { getMemberCartAPI, deleteMemberCartAPI } from '@/services/cart'
 import { useMemberStore } from '@/stores'
 import { onShow } from '@dcloudio/uni-app'
-import { ref, computed } from 'vue'
+import { ref, computed, defineProps } from 'vue'
 import type { CartItem } from '@/types/cart'
 import type { InputNumberBoxEvent } from '@/components/vk-data-input-number-box/vk-data-input-number-box'
 import { putMemberCartBySkuIdAPI, putMemberCartSelectedAPI } from '@/services/cart'
+
+// 定义props
+defineProps<{
+  // 是否开启底部安全区适配
+  safeAreaInsetBottom?: boolean
+}>()
 
 // 获取会员信息
 const memberStore = useMemberStore()
@@ -167,7 +173,7 @@ const gotoPayment = () => {
         </navigator>
       </view>
       <!-- 吸底工具栏 -->
-      <view class="toolbar">
+      <view class="toolbar" :class="{ 'safe-area-inset-bottom': safeAreaInsetBottom }">
         <text class="all" :class="{ checked: isSelectedAll }" @tap="onChangeSelectedAll">全选</text>
         <text class="text">合计:</text>
         <text class="amount">{{ selectedCartListMoney }}</text>
@@ -417,6 +423,12 @@ const gotoPayment = () => {
   border-bottom: 1rpx solid #ededed;
   background-color: #fff;
   box-sizing: content-box;
+
+  &.safe-area-inset-bottom {
+    padding-bottom: 0;
+    padding-bottom: constant(safe-area-inset-bottom);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 
   .all {
     margin-left: 25rpx;
