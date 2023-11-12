@@ -113,10 +113,7 @@ const gotoPayment = () => {
     return
   }
   // 跳转到结算页
-  uni.showToast({
-    title: '结算页等待完成',
-    icon: 'none',
-  })
+  uni.navigateTo({ url: '/pagesOrder/create/create' })
 }
 
 // 猜你喜欢-从组合式函数调取需要的数据和方法
