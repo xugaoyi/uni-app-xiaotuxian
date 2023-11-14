@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { useGuessList } from '@/composables'
-import { getMemberOrderByIdAPI, getMemberOrderConsignmentByIdAPI } from '@/services/order'
+import {
+  getMemberOrderByIdAPI,
+  getMemberOrderConsignmentByIdAPI,
+  putMemberOrderReceiptByIdAPI,
+} from '@/services/order'
 import type { OrderResult } from '@/types/order'
 import { onLoad, onReady } from '@dcloudio/uni-app'
 import { ref } from 'vue'
@@ -108,12 +112,27 @@ const onOrderPay = async () => {
 
 // 模拟发货
 const onOrderSend = async () => {
+  // 仅在开发环境下使用，打包到生产环境会剔除以下代码（tree shaking 树摇优化)
   if (isDev) {
     await getMemberOrderConsignmentByIdAPI(query.id)
     uni.showToast({ title: '模拟发货成功' })
     // 主动更新订单状态
     order.value!.orderState = OrderState.DaiShouHuo
   }
+}
+
+// 确认收货
+const onOrderConfirm = () => {
+  uni.showModal({
+    content: '为保障您的权益，请收到货并确认无误后，再确认收货',
+    success: async (success) => {
+      if (success.confirm) {
+        const { result } = await putMemberOrderReceiptByIdAPI(query.id)
+        // 更新订单状态
+        order.value = result
+      }
+    },
+  })
 }
 </script>
 
@@ -174,6 +193,14 @@ const onOrderSend = async () => {
               @tap="onOrderSend"
             >
               模拟发货
+            </view>
+            <!-- 待收货状态 -->
+            <view
+              v-if="order.orderState === OrderState.DaiShouHuo"
+              class="button"
+              @tap="onOrderConfirm"
+            >
+              确认收货
             </view>
           </view>
         </template>
