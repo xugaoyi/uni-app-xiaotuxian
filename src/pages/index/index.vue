@@ -94,6 +94,11 @@ const onRefresherrefresh = async () => {
 
 <style lang="scss">
 // page 同web端的 body
+
+// 修复app端没有渲染page元素的bug·
+/* #ifdef APP-PLUS */
+#app,
+/* #endif */
 page {
   background-color: #f7f7f7;
   height: 100%;

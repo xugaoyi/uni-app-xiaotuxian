@@ -155,7 +155,14 @@
     </view>
   </view>
 </template>
-<style>
+<style lang="scss">
+// H5端、APP端 默认开启 scoped 样式隔离，导致骨架屏基础样式无效，因此把样式单独抽离后引入。
+/* #ifdef H5 || APP-PLUS*/
+@import '@/components/styles/XtxSwiper.scss';
+@import './styles/CategoryPanel.scss';
+@import './styles/HotPanel.scss';
+/* #endif */
+
 .sk-transparent {
   color: transparent !important;
 }
