@@ -261,6 +261,13 @@ const onBuyNow = (ev: SkuPopupEvent) => {
 </template>
 
 <style lang="scss">
+// 购物车按钮渲染到网页端，会多一个a标签包裹，需要针对该a标签设置flex样式
+/* #ifdef H5 || APP-PLUS*/
+.toolbar .icons .navigator-wrap {
+  flex: 1;
+}
+/* #endif */
+
 page {
   height: 100%;
   overflow: hidden;
