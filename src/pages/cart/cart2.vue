@@ -6,3 +6,9 @@ import CartMain from './components/CartMain.vue'
 <template>
   <CartMain safeAreaInsetBottom />
 </template>
+
+<style lang="scss">
+page {
+  height: 100%;
+}
+</style>
