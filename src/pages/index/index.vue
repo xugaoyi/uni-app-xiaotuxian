@@ -62,6 +62,9 @@ const onRefresherrefresh = async () => {
   // 关闭动画
   isTriggered.value = false
 }
+
+const test = ''
+const test = ''
 </script>
 
 <template>
