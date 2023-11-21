@@ -58,7 +58,10 @@ onReady(() => {
   }
   pageInstance.animate(
     '.navbar', // 导航栏
-    [{ backgroundColor: 'transparent' }, { backgroundColor: '#f8f8f8' }],
+    [
+      { backgroundColor: 'transparent' }, // 起始状态
+      { backgroundColor: '#f8f8f8' }, // 目标状态
+    ],
     1000,
     scrollTimeline,
   )
